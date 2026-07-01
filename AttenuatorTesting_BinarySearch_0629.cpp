@@ -60,6 +60,8 @@ int binarySearch(int left, int right) {
 
         float measured = getVoltage();
         if (abs(measured - threshold) <= tolerance) {
+            finished = 1;
+            writeVoltage();
             return mid;
         } else if (measured < threshold) {
             right = mid;
@@ -88,8 +90,7 @@ void loop() {
   digitalWrite(5, HIGH);
   digitalWrite(6, HIGH);
   digitalWrite(7, HIGH);
-  binarySearch(0, 63); 
-  finished = 1;
+  binarySearch(0, 63);
   while (finished){
     delay(1000);
   }
