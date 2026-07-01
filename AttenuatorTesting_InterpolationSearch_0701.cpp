@@ -13,7 +13,7 @@ const float ADC_STEPS = (1 << int(R_BITS)) - 1;
 const int potentiometerPin = A3;
 const float threshold = 1.3;
 int newStart = 0;
-float tolerance = 0.05;
+float tolerance = 0.01;
 bool finished = 0;
 
 float getVoltage() {
@@ -51,25 +51,29 @@ void setVoltage(String bin) {
   }
 }
 
-int binarySearch(int left, int right) {
-  int result = left;
-  while (left < right) {
-      int mid = left + (right - left) / 2;
-      setVoltage(toBinary(mid));
-      writeVoltage();
+float measureAt(int num) {
+  setVoltage(toBinary(num));
+  return getVoltage();
+}
 
-        float measured = getVoltage();
-        if (abs(measured - threshold) <= tolerance) {
-            finished = 1;
-            writeVoltage();
-            return mid;
-        } else if (measured < threshold) {
-            right = mid;
-        } else {
-            left = mid + 1;
-        }
+int interpolationSearch(int left, int right) {
+  int pos;
+
+  while (left < right) {
+    pos = left + (threshold - measureAt(left)) * (right - left) / 
+          (measureAt(right)- measureAt(left));
+    if (abs(measureAt(pos) - threshold) <= tolerance) {
+      finished = 1;
+      return pos;
     }
-    return left;
+    else if (measureAt(pos) < threshold) {
+      left = pos + 1;
+    }
+    else {
+      right = pos - 1;
+    }
+    writeVoltage();
+  }
 }
 
 void setup() {
@@ -90,7 +94,8 @@ void loop() {
   digitalWrite(5, HIGH);
   digitalWrite(6, HIGH);
   digitalWrite(7, HIGH);
-  binarySearch(0, 63);
+  interpolationSearch(0, 63); 
+  writeVoltage();
   while (finished){
     delay(1000);
   }
