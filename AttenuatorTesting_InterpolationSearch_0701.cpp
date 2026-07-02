@@ -18,29 +18,31 @@ bool finished = 0;  //Final check for the algorithm completion
 //Minimum and Maximum voltage values from attenuation
 float minVoltage;
 float maxVoltage;
-float oldVoltage; 
-float newVoltage; 
+int pos;
+
+float oldVoltage;
+float newVoltage;
 
 //Method returns the voltage recorded by analog pin
 float getVoltage() {
   int rawValue = analogRead(potentiometerPin); // Read the analog input
   float voltage = (rawValue / ADC_STEPS) * V_REF; // Convert to voltage
-  newVoltage = voltage; 
+  newVoltage = voltage;
   return(voltage);
 }
 
 //Method writes the voltage of the MINIMUM, MAXIMUM and OUTPUT voltages
 void writeVoltage() {
   Serial.print("Min:");
-  Serial.print(minVoltage);
+  Serial.print(measureAt(63));
   Serial.print("\t");
 
   Serial.print("Max:");
-  Serial.print(maxVoltage);
+  Serial.print(measureAt(0));
   Serial.print("\t");
 
   Serial.print("Output:");
-  Serial.print(getVoltage(), 3); // Print voltage with 3 decimal places
+  Serial.print(measureAt(pos), 3); // Print voltage with 3 decimal places
   Serial.println();
 }
 
@@ -64,14 +66,13 @@ void setVoltage(String bin) {
   }
 }
 
-// check voltage, check abs value dif. between 
-bool checkVoltageChange () {
-  if (abs(oldVoltage - newVoltage) <= (tolerance * 5)) {
-    return false; 
+bool checkVoltageChange() {
+  if (abs(oldVoltage - newVoltage) <= (tolerance * 2)) {
+    return false;
   }
   else {
-    oldVoltage = newVoltage; 
-    return true; 
+    oldVoltage = newVoltage;
+    return true;
   }
 }
 
@@ -84,7 +85,6 @@ float measureAt(int num) {
 
 //Interpolation search algorithm
 int interpolationSearch(int left, int right) {
-  int pos;
 
   while (left < right) {
     pos = left + (threshold - measureAt(left)) * (right - left) / 
@@ -112,8 +112,8 @@ void setup() {
   pinMode(6, OUTPUT);
   pinMode(7, OUTPUT);
   Serial.begin(9600);
-  minVoltage = measureAt(0);
-  maxVoltage = measureAt(63); 
+  // minVoltage = measureAt(0);
+  // maxVoltage = measureAt(63); 
 }
 
 void loop() {
@@ -123,14 +123,14 @@ void loop() {
   digitalWrite(5, HIGH);
   digitalWrite(6, HIGH);
   digitalWrite(7, HIGH);
-  delay(5000);
+  //delay(5000);
   interpolationSearch(0, 63); 
   writeVoltage();
   while (finished){
     delay(1000);
     writeVoltage();
     if (checkVoltageChange()) {
-      finished = 0; 
+      finished = 0;
     }
   }
 }
