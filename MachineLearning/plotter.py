@@ -1,13 +1,25 @@
+"""
+Plot points from a CSV file using matplotlib.
+
+Just set CSV_PATH below to your file's location and run:
+    python plot_csv_points.py
+
+By default, the script assumes the CSV has a header row and uses the
+first two columns as x and y. Change X_COLUMN / Y_COLUMN below to use
+different columns (either column names or 0-based indices as strings,
+e.g. "0" or "2").
+"""
+
 import csv
 import sys
 
 import matplotlib.pyplot as plt
 
 # ==== EDIT THESE ====
-CSV_PATH = "/MachineLearning/data.csv"      # <-- put your CSV file path here
-X_COLUMN = "X"            # e.g. "time" or "0" (None = first column)
-Y_COLUMN = "Y"            # e.g. "value" or "1" (None = second column)
-OUTPUT_PATH = "/MachineLearning/plot.png"         # e.g. "plot.png" (None = show plot in a window)
+CSV_PATH = ".\\MachineLearning\\data.csv"      # <-- put your CSV file path here
+X_COLUMN = None            # e.g. "time" or "0" (None = first column)
+Y_COLUMN = None            # e.g. "value" or "1" (None = second column)
+OUTPUT_PATH = ".\\MachineLearning\\plot.png"         # e.g. "plot.png" (None = show plot in a window)
 # =====================
 
 
@@ -52,15 +64,8 @@ def load_points(csv_path, x_col, y_col):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Plot points from a CSV file.")
-    parser.add_argument("csv_path", help="Path to the CSV file")
-    parser.add_argument("--x", default=None, help="X column name or index (default: first column)")
-    parser.add_argument("--y", default=None, help="Y column name or index (default: second column)")
-    parser.add_argument("--output", default=None, help="Save plot to this file instead of showing it")
-    args = parser.parse_args()
-
     try:
-        xs, ys, x_label, y_label = load_points(args.csv_path, args.x, args.y)
+        xs, ys, x_label, y_label = load_points(CSV_PATH, X_COLUMN, Y_COLUMN)
     except (ValueError, FileNotFoundError) as e:
         print(f"Error: {e}", file=sys.stderr)
         sys.exit(1)
@@ -76,9 +81,9 @@ def main():
     plt.title(f"{y_label} vs {x_label}")
     plt.grid(True, alpha=0.3)
 
-    if args.output:
-        plt.savefig(args.output, dpi=150, bbox_inches="tight")
-        print(f"Plot saved to {args.output}")
+    if OUTPUT_PATH:
+        plt.savefig(OUTPUT_PATH, dpi=150, bbox_inches="tight")
+        print(f"Plot saved to {OUTPUT_PATH}")
     else:
         plt.show()
 
