@@ -6,9 +6,9 @@ X_COLUMN = None
 Y_COLUMN = None
 LEARNING_RATE = 0.01
 EPSILON = 1e-6
-MAX_ITERATIONS = 1_000_000
+MAX_ITERATIONS = 2_000_000
 
-THETA_PATH = ".\\MachineLearning\\theta.npy"
+THETA_PATH = ".\\MachineLearning\\theta_epsilon.npy"
 COST_HISTORY_PATH = ".\\MachineLearning\\cost_history.npy"   # <-- new
 
 # --- Load data ---

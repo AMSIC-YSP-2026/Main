@@ -184,6 +184,13 @@ def main():
     try:
         theta = np.load(THETA_PATH)
         intercept, slope = theta[0], theta[1]
+        
+        theta_epsilon = np.load(THETA_PATH)
+        intercept_epsilon, slope_epsilon = theta_epsilon[0], theta_epsilon[1]
+
+        theta_stochastic = np.load(THETA_PATH)
+        intercept_stochastic, slope_stochastic = theta_stochastic[0], theta_stochastic[1]
+                
     except FileNotFoundError:
         print(f"Error: {THETA_PATH} not found. Run the training script first.", file=sys.stderr)
         sys.exit(1)
@@ -191,12 +198,21 @@ def main():
     # --- Build the figure ---
     plt.figure(figsize=(8, 6))
     plt.scatter(xs, ys, label="Data points")
-
+    
     # --- Draw the predicted line ---
     x_min, x_max = min(xs), max(xs)
     line_x = np.linspace(x_min, x_max, 100)
     line_y = intercept + slope * line_x
     plt.plot(line_x, line_y, color="red", linewidth=2, label="Predicted line")
+
+    x_min, x_max = min(xs), max(xs)
+    epsilon_line_x = np.linspace(x_min, x_max, 100)
+    epsilon_line_y = intercept_epsilon + slope_epsilon * epsilon_line_x
+    plt.plot(epsilon_line_x, epsilon_line_y, color="green", linewidth=2, label="Epsilon Predicted line")
+    
+    stochastic_line_x = np.linspace(x_min, x_max, 100)
+    stochastic_line_y = intercept_stochastic + slope_stochastic * stochastic_line_x
+    plt.plot(stochastic_line_x, stochastic_line_y, color="blue", linewidth=2, label="Stochastic Predicted line")
 
     plt.xlabel(x_label)
     plt.ylabel(y_label)
